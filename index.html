@@ -3,119 +3,338 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Calculator Practice</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="../src/output.css">
+    <title>Scientific Calculator</title>
+
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
 </head>
 
-<body class="bg-slate-100 flex items-center justify-center min-h-screen">
+<body class="bg-slate-100 flex items-center justify-center min-h-screen p-4">
 
-    <div class="bg-white border-2 border-[#a2828b] rounded p-8 w-full max-w-sm">
+    <div class="bg-white border-2 border-[#a2828b] rounded-xl p-6 w-full max-w-md shadow-lg">
 
-        <h1 class="text-3xl font-bold text-[#8c6a74] mb-8 text-center">
-            Calculator
+        <h1 class="text-3xl font-bold text-[#8c6a74] mb-5 text-center">
+            Scientific Calculator
         </h1>
 
-        <!-- First Number -->
+        <!-- Display -->
         <input
-            type="number"
-            id="num1"
-            placeholder="Enter first number"
-            class="w-full px-3 py-2 mb-4 border-2 border-[#a2828b] rounded"
+            type="text"
+            id="display"
+            placeholder="0"
+            readonly
+            class="w-full p-4 mb-5 border-2 border-[#a2828b] rounded text-right text-2xl font-semibold text-[#8c6a74] bg-slate-50"
+            aria-label="Calculator display"
         >
 
-        <!-- Second Number -->
-        <input
-            type="number"
-            id="num2"
-            placeholder="Enter second number"
-            class="w-full px-3 py-2 mb-6 border-2 border-[#a2828b] rounded"
-        >
+        <!-- Scientific Buttons -->
+        <div class="grid grid-cols-4 gap-2 mb-3">
 
-        <!-- Buttons -->
-        <div class="flex justify-center gap-3 mb-8">
+            <button onclick="clearDisplay()" class="calc-btn bg-red-100">AC</button>
+            <button onclick="deleteLast()" class="calc-btn bg-red-100">DEL</button>
+            <button onclick="append('(')" class="calc-btn">(</button>
+            <button onclick="append(')')" class="calc-btn">)</button>
 
-            <button
-                onclick="calculate('+')"
-                class="w-12 h-12 border-2 border-[#a2828b] text-[#8c6a74] text-xl rounded">
-                +
-            </button>
+            <button onclick="append('sin(')" class="calc-btn">sin</button>
+            <button onclick="append('cos(')" class="calc-btn">cos</button>
+            <button onclick="append('tan(')" class="calc-btn">tan</button>
+            <button onclick="append('/')" class="calc-btn">÷</button>
 
-            <button
-                onclick="calculate('-')"
-                class="w-12 h-12 border-2 border-[#a2828b] text-[#8c6a74] text-xl rounded">
-                -
-            </button>
+            <button onclick="append('log(')" class="calc-btn">log</button>
+            <button onclick="append('ln(')" class="calc-btn">ln</button>
+            <button onclick="append('sqrt(')" class="calc-btn">√</button>
+            <button onclick="append('*')" class="calc-btn">×</button>
 
-            <button
-                onclick="calculate('*')"
-                class="w-12 h-12 border-2 border-[#a2828b] text-[#8c6a74] text-xl rounded">
-                *
-            </button>
+            <button onclick="append('^')" class="calc-btn">xʸ</button>
+            <button onclick="append('^2')" class="calc-btn">x²</button>
+            <button onclick="append('!')" class="calc-btn">x!</button>
+            <button onclick="append('-')" class="calc-btn">−</button>
 
-            <button
-                onclick="calculate('/')"
-                class="w-12 h-12 border-2 border-[#a2828b] text-[#8c6a74] text-xl rounded">
-                /
-            </button>
+            <button onclick="append('π')" class="calc-btn">π</button>
+            <button onclick="append('e')" class="calc-btn">e</button>
+            <button onclick="append('%')" class="calc-btn">%</button>
+            <button onclick="append('+')" class="calc-btn">+</button>
+
+            <button onclick="append('7')" class="calc-btn">7</button>
+            <button onclick="append('8')" class="calc-btn">8</button>
+            <button onclick="append('9')" class="calc-btn">9</button>
+            <button onclick="append('0')" class="calc-btn">0</button>
+
+            <button onclick="append('4')" class="calc-btn">4</button>
+            <button onclick="append('5')" class="calc-btn">5</button>
+            <button onclick="append('6')" class="calc-btn">6</button>
+            <button onclick="append('.')" class="calc-btn">.</button>
+
+            <button onclick="append('1')" class="calc-btn">1</button>
+            <button onclick="append('2')" class="calc-btn">2</button>
+            <button onclick="append('3')" class="calc-btn">3</button>
+            <button onclick="calculate()" class="calc-btn bg-[#8c6a74] text-white">=</button>
 
         </div>
 
-        <!-- Result -->
-        <div id="result" class="text-2xl font-bold text-[#8c6a74] text-center">
-            Result
+        <p class="text-xs text-gray-500 text-center mt-3">
+            Trigonometric functions use degrees.
+        </p>
+
+        <div id="result" class="text-lg font-bold text-[#8c6a74] text-center mt-3">
+            Result will appear here
         </div>
 
     </div>
 
+    <style>
+        .calc-btn {
+            padding: 12px 4px;
+            border: 2px solid #a2828b;
+            border-radius: 8px;
+            color: #8c6a74;
+            font-size: 16px;
+            font-weight: 600;
+            transition: 0.2s;
+        }
+
+        .calc-btn:hover {
+            background-color: #a2828b;
+            color: white;
+        }
+
+        .calc-btn:active {
+            transform: scale(0.95);
+        }
+    </style>
 
     <script>
+        const display = document.getElementById("display");
+        const resultBox = document.getElementById("result");
 
-        function calculate(operator) {
-
-            // Get numbers from input boxes
-            let num1 = document.getElementById("num1").value;
-            let num2 = document.getElementById("num2").value;
-
-            // Check if inputs are empty
-            if (num1 == "" || num2 == "") {
-                document.getElementById("result").innerHTML =
-                    "Please enter both numbers!";
-                return;
+        function append(value) {
+            if (display.value === "Error") {
+                display.value = "";
             }
 
-            // Convert input values into numbers
-            num1 = Number(num1);
-            num2 = Number(num2);
+            display.value += value;
+            resultBox.textContent = "Result will appear here";
+        }
 
-            let result;
+        function clearDisplay() {
+            display.value = "";
+            resultBox.textContent = "Result will appear here";
+        }
 
-            // Perform calculation
-            if (operator == "+") {
-                result = num1 + num2;
-            }
-            else if (operator == "-") {
-                result = num1 - num2;
-            }
-            else if (operator == "*") {
-                result = num1 * num2;
-            }
-            else if (operator == "/") {
+        function deleteLast() {
+            display.value = display.value.slice(0, -1);
+        }
 
-                if (num2 == 0) {
-                    document.getElementById("result").innerHTML =
-                        "Cannot divide by 0";
+        // Convert degrees into radians
+        function toRadians(degrees) {
+            return degrees * Math.PI / 180;
+        }
+
+        // Factorial calculation
+        function factorial(n) {
+            if (!Number.isInteger(n) || n < 0 || n > 170) {
+                throw new Error("Factorial needs an integer from 0 to 170");
+            }
+
+            let answer = 1;
+
+            for (let i = 2; i <= n; i++) {
+                answer *= i;
+            }
+
+            return answer;
+        }
+
+        function calculate() {
+            try {
+                let expression = display.value;
+
+                if (expression.trim() === "") {
+                    resultBox.textContent = "Please enter an expression.";
                     return;
                 }
 
-                result = num1 / num2;
-            }
+                // Replace constants and scientific functions
+                expression = expression
+                    .replace(/π/g, "Math.PI")
+                    .replace(/\be\b/g, "Math.E")
+                    .replace(/sin\(/g, "sin(")
+                    .replace(/cos\(/g, "cos(")
+                    .replace(/tan\(/g, "tan(")
+                    .replace(/sqrt\(/g, "sqrt(")
+                    .replace(/log\(/g, "log(")
+                    .replace(/ln\(/g, "ln(");
 
-            // Show result
-            document.getElementById("result").innerHTML =
-                "Result: " + result;
+                // Support implicit multiplication: 2π, 2(3+4), (2)(3)
+                expression = expression
+                    .replace(/(\d|\))(?=Math\.PI|Math\.E|\()/g, "$1*")
+                    .replace(/(Math\.PI|Math\.E|\))(?=\d)/g, "$1*");
+
+                // Convert calculator symbols into JavaScript operations
+                expression = expression.replace(/\^/g, "**");
+
+                // Evaluate only calculator-supported syntax.
+                // The parser below handles arithmetic and approved functions.
+                const tokens = tokenize(expression);
+                let position = 0;
+
+                function peek() {
+                    return tokens[position];
+                }
+
+                function consume() {
+                    return tokens[position++];
+                }
+
+                function parseExpression() {
+                    let value = parseTerm();
+
+                    while (peek() === "+" || peek() === "-") {
+                        const op = consume();
+                        const right = parseTerm();
+                        value = op === "+" ? value + right : value - right;
+                    }
+
+                    return value;
+                }
+
+                function parseTerm() {
+                    let value = parseUnary();
+
+                    while (["*", "/", "%"].includes(peek())) {
+                        const op = consume();
+                        const right = parseUnary();
+
+                        if ((op === "/" || op === "%") && right === 0) {
+                            throw new Error("Cannot divide by zero");
+                        }
+
+                        if (op === "*") value *= right;
+                        if (op === "/") value /= right;
+                        if (op === "%") value %= right;
+                    }
+
+                    return value;
+                }
+
+                function parseUnary() {
+                    if (peek() === "+") {
+                        consume();
+                        return parseUnary();
+                    }
+
+                    if (peek() === "-") {
+                        consume();
+                        return -parseUnary();
+                    }
+
+                    return parsePower();
+                }
+
+                function parsePower() {
+                    let value = parsePrimary();
+
+                    if (peek() === "**") {
+                        consume();
+                        value = Math.pow(value, parseUnary());
+                    }
+
+                    while (peek() === "!") {
+                        consume();
+                        value = factorial(value);
+                    }
+
+                    return value;
+                }
+
+                function parsePrimary() {
+                    const token = consume();
+
+                    if (token === "(") {
+                        const value = parseExpression();
+
+                        if (consume() !== ")") {
+                            throw new Error("Missing closing parenthesis");
+                        }
+
+                        return value;
+                    }
+
+                    if (token === "Math.PI") return Math.PI;
+                    if (token === "Math.E") return Math.E;
+
+                    if (/^\d+(\.\d+)?$/.test(token)) {
+                        return Number(token);
+                    }
+
+                    if (["sin", "cos", "tan", "sqrt", "log", "ln"].includes(token)) {
+                        if (consume() !== "(") {
+                            throw new Error("Function needs parentheses");
+                        }
+
+                        const x = parseExpression();
+
+                        if (consume() !== ")") {
+                            throw new Error("Missing closing parenthesis");
+                        }
+
+                        if (token === "sin") return Math.sin(toRadians(x));
+                        if (token === "cos") return Math.cos(toRadians(x));
+                        if (token === "tan") {
+                            if (Math.abs(Math.cos(toRadians(x))) < 1e-12) {
+                                throw new Error("Tangent is undefined");
+                            }
+                            return Math.tan(toRadians(x));
+                        }
+                        if (token === "sqrt") {
+                            if (x < 0) throw new Error("Square root of a negative number");
+                            return Math.sqrt(x);
+                        }
+                        if (token === "log") {
+                            if (x <= 0) throw new Error("Log input must be positive");
+                            return Math.log10(x);
+                        }
+                        if (token === "ln") {
+                            if (x <= 0) throw new Error("Log input must be positive");
+                            return Math.log(x);
+                        }
+                    }
+
+                    throw new Error("Invalid expression");
+                }
+
+                const answer = parseExpression();
+
+                if (position !== tokens.length || !Number.isFinite(answer)) {
+                    throw new Error("Invalid expression");
+                }
+
+                display.value = Number(answer.toPrecision(12)).toString();
+                resultBox.textContent = "Result: " + display.value;
+
+            } catch (error) {
+                resultBox.textContent = error.message || "Invalid expression";
+            }
         }
 
+        function tokenize(expression) {
+            const tokens = [];
+            const pattern = /\s*(Math\.PI|Math\.E|sin|cos|tan|sqrt|log|ln|\d+(?:\.\d+)?|\*\*|[()+\-*/%!])\s*/gy;
+            let position = 0;
+
+            while (position < expression.length) {
+                pattern.lastIndex = position;
+                const match = pattern.exec(expression);
+
+                if (!match || match.index !== position) {
+                    throw new Error("Invalid character in expression");
+                }
+
+                tokens.push(match[1]);
+                position = pattern.lastIndex;
+            }
+
+            return tokens;
+        }
     </script>
 
 </body>
