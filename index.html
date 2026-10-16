@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -12,7 +13,7 @@
 
     <div class="bg-white border-2 border-[#a2828b] rounded-xl p-6 w-full max-w-md shadow-lg">
 
-        <h1 class="text-3xl font-bold text-[#8c6a74] mb-5 text-center">
+        <h1 class="text-3xl font-bold text-[#8c6a74] mb-6 text-center">
             Scientific Calculator
         </h1>
 
@@ -20,44 +21,38 @@
         <input
             type="text"
             id="display"
-            placeholder="0"
             readonly
-            class="w-full p-4 mb-5 border-2 border-[#a2828b] rounded text-right text-2xl font-semibold text-[#8c6a74] bg-slate-50"
-            aria-label="Calculator display"
+            placeholder="0"
+            class="w-full p-4 mb-4 border-2 border-[#a2828b] rounded text-right text-2xl"
         >
 
-        <!-- Scientific Buttons -->
-        <div class="grid grid-cols-4 gap-2 mb-3">
+        <!-- Calculator Buttons -->
+        <div class="grid grid-cols-4 gap-2">
 
-            <button onclick="clearDisplay()" class="calc-btn bg-red-100">AC</button>
-            <button onclick="deleteLast()" class="calc-btn bg-red-100">DEL</button>
+            <button onclick="clearDisplay()" class="calc-btn">AC</button>
+            <button onclick="deleteLast()" class="calc-btn">DEL</button>
             <button onclick="append('(')" class="calc-btn">(</button>
             <button onclick="append(')')" class="calc-btn">)</button>
 
-            <button onclick="append('sin(')" class="calc-btn">sin</button>
-            <button onclick="append('cos(')" class="calc-btn">cos</button>
-            <button onclick="append('tan(')" class="calc-btn">tan</button>
+            <button onclick="calculate('sin')" class="calc-btn">sin</button>
+            <button onclick="calculate('cos')" class="calc-btn">cos</button>
+            <button onclick="calculate('tan')" class="calc-btn">tan</button>
             <button onclick="append('/')" class="calc-btn">÷</button>
 
-            <button onclick="append('log(')" class="calc-btn">log</button>
-            <button onclick="append('ln(')" class="calc-btn">ln</button>
-            <button onclick="append('sqrt(')" class="calc-btn">√</button>
+            <button onclick="calculate('log')" class="calc-btn">log</button>
+            <button onclick="calculate('ln')" class="calc-btn">ln</button>
+            <button onclick="calculate('sqrt')" class="calc-btn">√</button>
             <button onclick="append('*')" class="calc-btn">×</button>
 
+            <button onclick="calculate('square')" class="calc-btn">x²</button>
             <button onclick="append('^')" class="calc-btn">xʸ</button>
-            <button onclick="append('^2')" class="calc-btn">x²</button>
-            <button onclick="append('!')" class="calc-btn">x!</button>
-            <button onclick="append('-')" class="calc-btn">−</button>
-
             <button onclick="append('π')" class="calc-btn">π</button>
-            <button onclick="append('e')" class="calc-btn">e</button>
-            <button onclick="append('%')" class="calc-btn">%</button>
-            <button onclick="append('+')" class="calc-btn">+</button>
+            <button onclick="append('-')" class="calc-btn">−</button>
 
             <button onclick="append('7')" class="calc-btn">7</button>
             <button onclick="append('8')" class="calc-btn">8</button>
             <button onclick="append('9')" class="calc-btn">9</button>
-            <button onclick="append('0')" class="calc-btn">0</button>
+            <button onclick="append('+')" class="calc-btn">+</button>
 
             <button onclick="append('4')" class="calc-btn">4</button>
             <button onclick="append('5')" class="calc-btn">5</button>
@@ -67,17 +62,22 @@
             <button onclick="append('1')" class="calc-btn">1</button>
             <button onclick="append('2')" class="calc-btn">2</button>
             <button onclick="append('3')" class="calc-btn">3</button>
-            <button onclick="calculate()" class="calc-btn bg-[#8c6a74] text-white">=</button>
+            <button onclick="append('0')" class="calc-btn">0</button>
 
+            <button onclick="calculate('factorial')" class="calc-btn">x!</button>
+            <button onclick="append('%')" class="calc-btn">%</button>
+            <button onclick="append('π')" class="calc-btn">π</button>
+            <button onclick="calculate('equal')" class="calc-btn bg-[#8c6a74] text-white">=</button>
+
+        </div>
+
+        <div id="result" class="text-xl font-bold text-[#8c6a74] text-center mt-5">
+            Result
         </div>
 
         <p class="text-xs text-gray-500 text-center mt-3">
             Trigonometric functions use degrees.
         </p>
-
-        <div id="result" class="text-lg font-bold text-[#8c6a74] text-center mt-3">
-            Result will appear here
-        </div>
 
     </div>
 
@@ -87,253 +87,123 @@
             border: 2px solid #a2828b;
             border-radius: 8px;
             color: #8c6a74;
+            font-weight: bold;
             font-size: 16px;
-            font-weight: 600;
-            transition: 0.2s;
+            cursor: pointer;
         }
 
         .calc-btn:hover {
             background-color: #a2828b;
             color: white;
         }
-
-        .calc-btn:active {
-            transform: scale(0.95);
-        }
     </style>
 
     <script>
-        const display = document.getElementById("display");
-        const resultBox = document.getElementById("result");
+        let display = document.getElementById("display");
+        let result = document.getElementById("result");
 
         function append(value) {
-            if (display.value === "Error") {
-                display.value = "";
-            }
-
             display.value += value;
-            resultBox.textContent = "Result will appear here";
         }
 
         function clearDisplay() {
             display.value = "";
-            resultBox.textContent = "Result will appear here";
+            result.innerHTML = "Result";
         }
 
         function deleteLast() {
             display.value = display.value.slice(0, -1);
         }
 
-        // Convert degrees into radians
-        function toRadians(degrees) {
-            return degrees * Math.PI / 180;
-        }
+        function calculate(operator) {
 
-        // Factorial calculation
-        function factorial(n) {
-            if (!Number.isInteger(n) || n < 0 || n > 170) {
-                throw new Error("Factorial needs an integer from 0 to 170");
+            let num = Number(display.value);
+            let answer;
+
+            if (display.value === "") {
+                result.innerHTML = "Enter a number!";
+                return;
             }
 
-            let answer = 1;
-
-            for (let i = 2; i <= n; i++) {
-                answer *= i;
+            if (operator == "sqrt") {
+                answer = Math.sqrt(num);
             }
-
-            return answer;
-        }
-
-        function calculate() {
-            try {
-                let expression = display.value;
-
-                if (expression.trim() === "") {
-                    resultBox.textContent = "Please enter an expression.";
+            else if (operator == "square") {
+                answer = num * num;
+            }
+            else if (operator == "sin") {
+                answer = Math.sin(num * Math.PI / 180);
+            }
+            else if (operator == "cos") {
+                answer = Math.cos(num * Math.PI / 180);
+            }
+            else if (operator == "tan") {
+                if (Math.abs(Math.cos(num * Math.PI / 180)) < 0.0000000001) {
+                    result.innerHTML = "Tan is undefined";
+                    return;
+                }
+                answer = Math.tan(num * Math.PI / 180);
+            }
+            else if (operator == "log") {
+                if (num <= 0) {
+                    result.innerHTML = "Enter a positive number!";
+                    return;
+                }
+                answer = Math.log10(num);
+            }
+            else if (operator == "ln") {
+                if (num <= 0) {
+                    result.innerHTML = "Enter a positive number!";
+                    return;
+                }
+                answer = Math.log(num);
+            }
+            else if (operator == "factorial") {
+                if (num < 0 || !Number.isInteger(num) || num > 170) {
+                    result.innerHTML = "Enter an integer from 0 to 170";
                     return;
                 }
 
-                // Replace constants and scientific functions
-                expression = expression
-                    .replace(/π/g, "Math.PI")
-                    .replace(/\be\b/g, "Math.E")
-                    .replace(/sin\(/g, "sin(")
-                    .replace(/cos\(/g, "cos(")
-                    .replace(/tan\(/g, "tan(")
-                    .replace(/sqrt\(/g, "sqrt(")
-                    .replace(/log\(/g, "log(")
-                    .replace(/ln\(/g, "ln(");
+                answer = 1;
 
-                // Support implicit multiplication: 2π, 2(3+4), (2)(3)
-                expression = expression
-                    .replace(/(\d|\))(?=Math\.PI|Math\.E|\()/g, "$1*")
-                    .replace(/(Math\.PI|Math\.E|\))(?=\d)/g, "$1*");
-
-                // Convert calculator symbols into JavaScript operations
-                expression = expression.replace(/\^/g, "**");
-
-                // Evaluate only calculator-supported syntax.
-                // The parser below handles arithmetic and approved functions.
-                const tokens = tokenize(expression);
-                let position = 0;
-
-                function peek() {
-                    return tokens[position];
+                for (let i = 1; i <= num; i++) {
+                    answer = answer * i;
                 }
-
-                function consume() {
-                    return tokens[position++];
-                }
-
-                function parseExpression() {
-                    let value = parseTerm();
-
-                    while (peek() === "+" || peek() === "-") {
-                        const op = consume();
-                        const right = parseTerm();
-                        value = op === "+" ? value + right : value - right;
-                    }
-
-                    return value;
-                }
-
-                function parseTerm() {
-                    let value = parseUnary();
-
-                    while (["*", "/", "%"].includes(peek())) {
-                        const op = consume();
-                        const right = parseUnary();
-
-                        if ((op === "/" || op === "%") && right === 0) {
-                            throw new Error("Cannot divide by zero");
-                        }
-
-                        if (op === "*") value *= right;
-                        if (op === "/") value /= right;
-                        if (op === "%") value %= right;
-                    }
-
-                    return value;
-                }
-
-                function parseUnary() {
-                    if (peek() === "+") {
-                        consume();
-                        return parseUnary();
-                    }
-
-                    if (peek() === "-") {
-                        consume();
-                        return -parseUnary();
-                    }
-
-                    return parsePower();
-                }
-
-                function parsePower() {
-                    let value = parsePrimary();
-
-                    if (peek() === "**") {
-                        consume();
-                        value = Math.pow(value, parseUnary());
-                    }
-
-                    while (peek() === "!") {
-                        consume();
-                        value = factorial(value);
-                    }
-
-                    return value;
-                }
-
-                function parsePrimary() {
-                    const token = consume();
-
-                    if (token === "(") {
-                        const value = parseExpression();
-
-                        if (consume() !== ")") {
-                            throw new Error("Missing closing parenthesis");
-                        }
-
-                        return value;
-                    }
-
-                    if (token === "Math.PI") return Math.PI;
-                    if (token === "Math.E") return Math.E;
-
-                    if (/^\d+(\.\d+)?$/.test(token)) {
-                        return Number(token);
-                    }
-
-                    if (["sin", "cos", "tan", "sqrt", "log", "ln"].includes(token)) {
-                        if (consume() !== "(") {
-                            throw new Error("Function needs parentheses");
-                        }
-
-                        const x = parseExpression();
-
-                        if (consume() !== ")") {
-                            throw new Error("Missing closing parenthesis");
-                        }
-
-                        if (token === "sin") return Math.sin(toRadians(x));
-                        if (token === "cos") return Math.cos(toRadians(x));
-                        if (token === "tan") {
-                            if (Math.abs(Math.cos(toRadians(x))) < 1e-12) {
-                                throw new Error("Tangent is undefined");
-                            }
-                            return Math.tan(toRadians(x));
-                        }
-                        if (token === "sqrt") {
-                            if (x < 0) throw new Error("Square root of a negative number");
-                            return Math.sqrt(x);
-                        }
-                        if (token === "log") {
-                            if (x <= 0) throw new Error("Log input must be positive");
-                            return Math.log10(x);
-                        }
-                        if (token === "ln") {
-                            if (x <= 0) throw new Error("Log input must be positive");
-                            return Math.log(x);
-                        }
-                    }
-
-                    throw new Error("Invalid expression");
-                }
-
-                const answer = parseExpression();
-
-                if (position !== tokens.length || !Number.isFinite(answer)) {
-                    throw new Error("Invalid expression");
-                }
-
-                display.value = Number(answer.toPrecision(12)).toString();
-                resultBox.textContent = "Result: " + display.value;
-
-            } catch (error) {
-                resultBox.textContent = error.message || "Invalid expression";
             }
-        }
+            else if (operator == "equal") {
+                try {
+                    let expression = display.value
+                        .replace(/π/g, "Math.PI")
+                        .replace(/\^/g, "**");
 
-        function tokenize(expression) {
-            const tokens = [];
-            const pattern = /\s*(Math\.PI|Math\.E|sin|cos|tan|sqrt|log|ln|\d+(?:\.\d+)?|\*\*|[()+\-*/%!])\s*/gy;
-            let position = 0;
+                    // Only basic arithmetic expressions are accepted here.
+                    if (!/^[0-9+\-*/%.()\s*MathPIE]+$/.test(expression)) {
+                        result.innerHTML = "Invalid expression";
+                        return;
+                    }
 
-            while (position < expression.length) {
-                pattern.lastIndex = position;
-                const match = pattern.exec(expression);
+                    answer = Function('"use strict"; return (' + expression + ')')();
 
-                if (!match || match.index !== position) {
-                    throw new Error("Invalid character in expression");
+                    if (!Number.isFinite(answer)) {
+                        result.innerHTML = "Invalid calculation";
+                        return;
+                    }
                 }
-
-                tokens.push(match[1]);
-                position = pattern.lastIndex;
+                catch {
+                    result.innerHTML = "Invalid expression";
+                    return;
+                }
             }
 
-            return tokens;
+            if (answer === undefined || !Number.isFinite(answer)) {
+                result.innerHTML = "Invalid calculation";
+                return;
+            }
+
+            answer = Number(answer.toFixed(8));
+
+            display.value = answer;
+            result.innerHTML = "Result: " + answer;
         }
     </script>
 
